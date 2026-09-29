@@ -1,5 +1,5 @@
 # ADR-0002: Statistical definitions for the six reported quantities
-Status: Accepted
+Status: Accepted; SD estimator superseded by ADR-0003 (divide by n − 1)
 Date: 2026-09-29 (decided by the user the same day)
 
 ## Context

@@ -6,12 +6,13 @@ older entries into vault notes and leave a link. When two entries conflict, the 
 ## Key decisions
 - 2026-09-29 — Python ≥ 3.11, uv, src layout, pytest/ruff/mypy --strict, stdlib-first (no runtime
   deps yet) → [ADR-0001](docs/adr/ADR-0001-python-stack-and-layout.md)
-- 2026-09-29 — **Accepted (user):** mean plus **population SD (ddof = 0)** of the four per-file means.
+- 2026-09-29 — **Accepted (user):** mean of the four per-file means.
   Within-file SDs are ignored. ρ and σ come from the files (no thickness). Units stay as in the
   files → [ADR-0002](docs/adr/ADR-0002-statistical-definitions.md)
-- 2026-09-29 — The user asked that the SD use **the same function as the instrument**. The instrument's
-  within-file SDs are population SD (verified from the raw rows), so they agree with ADR-0002. A test
-  pins this; if the instrument ever changes, the test fails.
+- 2026-09-29 — **User: divide by n − 1 for all SDs** (sample SD, `statistics.stdev`), which supersedes
+  ADR-0002's population SD → [ADR-0003](docs/adr/ADR-0003-sample-standard-deviation.md). The
+  instrument's within-file SDs divide by **n**, so the tool deliberately differs from them. Don't
+  "align" the two.
 - 2026-09-29 — The CLI accepts a nested export `X/X/*.csv` given as `X` (user decision).
 
 ## Known pitfalls

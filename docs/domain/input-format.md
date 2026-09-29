@@ -23,8 +23,8 @@
   (1, 3, 5), never by name through a dict.
 - Units are SI: resistivity is in **Ω·m** and conductivity in **S/m**, not Ω·cm or S/cm.
 - Summary "Mean" = arithmetic mean of the 26 raw rows. Summary "Standard Deviation" = **population
-  SD (divide by n)** of the raw rows. Verified to 12 digits in all 4 files; the tool uses the same
-  function (pinned by `test_sd_function_matches_instrument`).
+  SD (divide by n)** of the raw rows. Verified to 12 digits in all 4 files (pinned by
+  `test_instrument_within_file_sd_is_population`). Note that the tool's own SDs divide by n − 1 (ADR-0003).
 
 ## Instrument-side relationships (observed in the data; not used by the tool)
 - Rs = 4.50797 · V/I. The correction factor is ≈ 4.508, not π/ln2 ≈ 4.532.

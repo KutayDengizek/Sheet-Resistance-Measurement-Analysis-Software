@@ -1,7 +1,8 @@
 """Pure aggregation of per-file means into the six reported quantities (no I/O).
 
-Estimators are fixed by docs/adr/ADR-0002-statistical-definitions.md: arithmetic mean and
-population standard deviation (ddof = 0) of the per-file means; within-file SDs are not used.
+Estimators are fixed by docs/adr/ADR-0002-statistical-definitions.md as amended by
+docs/adr/ADR-0003-sample-standard-deviation.md: arithmetic mean and sample standard deviation
+(divide by n - 1) of the per-file means; within-file SDs are not used.
 """
 
 from __future__ import annotations
@@ -12,8 +13,9 @@ from dataclasses import dataclass
 
 from sheetres.parser import Measurement
 
-# ADR-0002: population SD (divide by n), i.e. Excel STDEV.P. Changing this requires a new ADR.
-standard_deviation = statistics.pstdev
+# ADR-0003: sample SD (divide by n - 1), i.e. Excel STDEV.S. Changing this requires a new ADR.
+standard_deviation = statistics.stdev
+MIN_MEASUREMENTS_FOR_SD = 2  # n - 1 must be > 0
 
 
 @dataclass(frozen=True)
@@ -31,6 +33,11 @@ class SampleSummary:
 def summarize(measurements: Sequence[Measurement]) -> SampleSummary:
     if not measurements:
         raise ValueError("summarize: no measurements given")
+    if len(measurements) < MIN_MEASUREMENTS_FOR_SD:
+        raise ValueError(
+            f"summarize: need at least {MIN_MEASUREMENTS_FOR_SD} measurements for a sample SD, "
+            f"got {len(measurements)}"
+        )
     samples = {m.sample for m in measurements}
     if len(samples) != 1:
         raise ValueError(f"summarize: measurements from more than one sample: {sorted(samples)}")

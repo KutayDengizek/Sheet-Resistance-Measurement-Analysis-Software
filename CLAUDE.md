@@ -43,7 +43,7 @@ uv run ruff check . && uv run ruff format --check . && uv run mypy
    non-numeric value raises an error that names the file and line. Never skip data, and never
    default a value to 0/NaN. No bare `except`, no `except: pass`. *(ruff BLE/S110/S112, on write)*
 4. **Statistics are defined by ADR, not improvised.** Estimators (ddof, SD vs SEM, how σ/ρ are
-   derived) follow [ADR-0002](docs/adr/ADR-0002-statistical-definitions.md). Changing one requires a new ADR.
+   derived) follow [ADR-0002](docs/adr/ADR-0002-statistical-definitions.md) + [ADR-0003](docs/adr/ADR-0003-sample-standard-deviation.md) (SD divides by n − 1). Changing one requires a new ADR.
 5. **Explicit units, no magic numbers.** Name every conversion constant. *(ruff PLR2004)*
 6. **Every commit is green:** ruff + mypy --strict + fast tests. No `--no-verify`. *(hook-enforced)*
 7. **Pure core.** `stats` does no I/O. Parsing, computation and presentation stay separate.

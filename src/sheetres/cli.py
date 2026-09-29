@@ -23,7 +23,7 @@ def format_summary(s: SampleSummary) -> str:
         ("Std. dev. of mean conductivity", s.sigma_sd_s_per_m, "S/m"),
     ]
     width = max(len(label) for label, _, _ in rows)
-    lines = [f"Sample {s.sample}  (n = {s.n} measurements, population SD)"]
+    lines = [f"Sample {s.sample}  (n = {s.n} measurements, sample SD with n-1)"]
     lines += [f"  {label:<{width}}  {value:.6g} {unit}" for label, value, unit in rows]
     return "\n".join(lines)
 

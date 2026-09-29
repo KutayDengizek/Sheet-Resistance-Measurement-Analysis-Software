@@ -16,11 +16,11 @@ def mean(xs: list[float]) -> float:
     return (xs[0] + xs[1] + xs[2] + xs[3]) / 4
 
 
-def population_sd(xs: list[float]) -> float:
-    """ADR-0002: sqrt( (1/n) * sum (x_k - mean)^2 ), n = 4."""
+def sample_sd(xs: list[float]) -> float:
+    """ADR-0003: sqrt( (1/(n-1)) * sum (x_k - mean)^2 ), n = 4."""
     m = mean(xs)
     return math.sqrt(
-        ((xs[0] - m) ** 2 + (xs[1] - m) ** 2 + (xs[2] - m) ** 2 + (xs[3] - m) ** 2) / 4
+        ((xs[0] - m) ** 2 + (xs[1] - m) ** 2 + (xs[2] - m) ** 2 + (xs[3] - m) ** 2) / 3
     )
 
 
@@ -29,11 +29,11 @@ def test_u1_summary_matches_hand_calculation(u1_folder: Path) -> None:
     assert s.sample == "260902_U1"
     assert s.n == 4
     assert s.rs_mean_ohm_sq == pytest.approx(mean(RS), rel=1e-12)
-    assert s.rs_sd_ohm_sq == pytest.approx(population_sd(RS), rel=1e-9)
+    assert s.rs_sd_ohm_sq == pytest.approx(sample_sd(RS), rel=1e-9)
     assert s.rho_mean_ohm_m == pytest.approx(mean(RHO), rel=1e-12)
-    assert s.rho_sd_ohm_m == pytest.approx(population_sd(RHO), rel=1e-9)
+    assert s.rho_sd_ohm_m == pytest.approx(sample_sd(RHO), rel=1e-9)
     assert s.sigma_mean_s_per_m == pytest.approx(mean(SIGMA), rel=1e-12)
-    assert s.sigma_sd_s_per_m == pytest.approx(population_sd(SIGMA), rel=1e-9)
+    assert s.sigma_sd_s_per_m == pytest.approx(sample_sd(SIGMA), rel=1e-9)
 
 
 def test_u1_known_magnitudes(u1_folder: Path) -> None:
@@ -41,11 +41,11 @@ def test_u1_known_magnitudes(u1_folder: Path) -> None:
     s = summarize(load_sample(u1_folder))
     assert s.rs_mean_ohm_sq == pytest.approx(434.905, abs=1e-3)
     # deviations 2.4946, 0.1532, -1.0726, -1.5753 -> sum of squares 9.8783
-    # population: sqrt(9.8783 / 4) = 1.5715; sample (ddof=1) would be sqrt(9.8783 / 3) = 1.8146
-    assert s.rs_sd_ohm_sq == pytest.approx(1.5715, abs=1e-3)
+    # sample (n-1): sqrt(9.8783 / 3) = 1.8146; population would be sqrt(9.8783 / 4) = 1.5715
+    assert s.rs_sd_ohm_sq == pytest.approx(1.8146, abs=1e-3)
 
 
-def test_uses_population_not_sample_sd() -> None:
+def test_uses_sample_not_population_sd() -> None:
     from sheetres.parser import Measurement
 
     ms = [
@@ -53,14 +53,19 @@ def test_uses_population_not_sample_sd() -> None:
         for k, rs in enumerate([1.0, 2.0, 3.0, 4.0], start=1)
     ]
     s = summarize(ms)
-    # mean 2.5; deviations -1.5 -0.5 0.5 1.5; sum of squares 5; population variance 5/4
+    # mean 2.5; deviations -1.5 -0.5 0.5 1.5; sum of squares 5; sample variance 5/3
     assert s.rs_mean_ohm_sq == 2.5
-    assert s.rs_sd_ohm_sq == pytest.approx(math.sqrt(5 / 4))
+    assert s.rs_sd_ohm_sq == pytest.approx(math.sqrt(5 / 3))
 
 
 def test_empty_input_is_an_error() -> None:
     with pytest.raises(ValueError, match="no measurements"):
         summarize([])
+
+
+def test_single_measurement_is_an_error(u1_folder: Path) -> None:
+    with pytest.raises(ValueError, match="at least 2"):
+        summarize(load_sample(u1_folder)[:1])
 
 
 def test_mixed_samples_are_an_error(u1_folder: Path) -> None:
@@ -72,21 +77,17 @@ def test_mixed_samples_are_an_error(u1_folder: Path) -> None:
         summarize(ms)
 
 
-def test_sd_function_matches_instrument(u1_folder: Path) -> None:
-    """The tool must use the same SD formula as the instrument (population SD, divide by n).
-
-    Oracle: the instrument's own within-file SDs, recomputed from the 26 raw rows of each file.
+def test_instrument_within_file_sd_is_population(u1_folder: Path) -> None:
+    """Data fact, not tool behavior: the instrument's within-file SDs divide by n, unlike the tool
+    (ADR-0003). They are unused in the result; this guards anyone who later wants to use them.
     """
     import csv
-
-    from sheetres.stats import standard_deviation
+    import statistics
 
     for m in load_sample(u1_folder):
         rows = [r for r in csv.reader(m.path.read_text(encoding="utf-8").splitlines()) if r]
         raw = [[float(c) for c in r] for r in rows[1:-2]]
         assert len(raw) == 26
-        assert standard_deviation([r[2] for r in raw]) == pytest.approx(m.rs_sd_ohm_sq, rel=1e-9)
-        assert standard_deviation([r[3] for r in raw]) == pytest.approx(m.rho_sd_ohm_m, rel=1e-9)
-        assert standard_deviation([r[4] for r in raw]) == pytest.approx(
-            m.sigma_sd_s_per_m, rel=1e-9
-        )
+        assert statistics.pstdev([r[2] for r in raw]) == pytest.approx(m.rs_sd_ohm_sq, rel=1e-9)
+        assert statistics.pstdev([r[3] for r in raw]) == pytest.approx(m.rho_sd_ohm_m, rel=1e-9)
+        assert statistics.pstdev([r[4] for r in raw]) == pytest.approx(m.sigma_sd_s_per_m, rel=1e-9)
