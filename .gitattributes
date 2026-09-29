@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Raw instrument exports must stay byte-identical (CLAUDE.md invariant 1): no EOL normalization.
+tests/fixtures/** -text
