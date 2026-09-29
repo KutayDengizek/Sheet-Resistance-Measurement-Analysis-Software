@@ -70,3 +70,23 @@ def test_mixed_samples_are_an_error(u1_folder: Path) -> None:
     ms[2] = replace(ms[2], sample="OTHER")
     with pytest.raises(ValueError, match="more than one sample"):
         summarize(ms)
+
+
+def test_sd_function_matches_instrument(u1_folder: Path) -> None:
+    """The tool must use the same SD formula as the instrument (population SD, divide by n).
+
+    Oracle: the instrument's own within-file SDs, recomputed from the 26 raw rows of each file.
+    """
+    import csv
+
+    from sheetres.stats import standard_deviation
+
+    for m in load_sample(u1_folder):
+        rows = [r for r in csv.reader(m.path.read_text(encoding="utf-8").splitlines()) if r]
+        raw = [[float(c) for c in r] for r in rows[1:-2]]
+        assert len(raw) == 26
+        assert standard_deviation([r[2] for r in raw]) == pytest.approx(m.rs_sd_ohm_sq, rel=1e-9)
+        assert standard_deviation([r[3] for r in raw]) == pytest.approx(m.rho_sd_ohm_m, rel=1e-9)
+        assert standard_deviation([r[4] for r in raw]) == pytest.approx(
+            m.sigma_sd_s_per_m, rel=1e-9
+        )

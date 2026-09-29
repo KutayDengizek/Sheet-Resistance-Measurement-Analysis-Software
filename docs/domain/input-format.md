@@ -12,7 +12,7 @@
 
 ## File layout (all four files are identical in structure)
 1. Header: `Current (A),Voltage (V),Sheet Resistance (Ohm/square),Resistivity (Ohm.m),Conductivity (S/m)`
-2. 27 raw measurement rows, 5 columns
+2. 26 raw measurement rows, 5 columns (the data folder's own CLAUDE.md said 27, which is wrong)
 3. One blank line
 4. Summary header, 6 columns: `Mean Sheet Resistance (Ohm/square),Standard Deviation,Mean Resistivity (Ohm.m),Standard Deviation,Mean Conductivity (S/m),Standard Deviation`
 5. Summary values, 6 columns
@@ -22,6 +22,9 @@
 - **The name `Standard Deviation` appears three times.** Columns must be addressed by position
   (1, 3, 5), never by name through a dict.
 - Units are SI: resistivity is in **Ω·m** and conductivity in **S/m**, not Ω·cm or S/cm.
+- Summary "Mean" = arithmetic mean of the 26 raw rows. Summary "Standard Deviation" = **population
+  SD (divide by n)** of the raw rows. Verified to 12 digits in all 4 files; the tool uses the same
+  function (pinned by `test_sd_function_matches_instrument`).
 
 ## Instrument-side relationships (observed in the data; not used by the tool)
 - Rs = 4.50797 · V/I. The correction factor is ≈ 4.508, not π/ln2 ≈ 4.532.

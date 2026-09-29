@@ -9,6 +9,9 @@ older entries into vault notes and leave a link. When two entries conflict, the 
 - 2026-09-29 — **Accepted (user):** mean plus **population SD (ddof = 0)** of the four per-file means.
   Within-file SDs are ignored. ρ and σ come from the files (no thickness). Units stay as in the
   files → [ADR-0002](docs/adr/ADR-0002-statistical-definitions.md)
+- 2026-09-29 — The user asked that the SD use **the same function as the instrument**. The instrument's
+  within-file SDs are population SD (verified from the raw rows), so they agree with ADR-0002. A test
+  pins this; if the instrument ever changes, the test fails.
 - 2026-09-29 — The CLI accepts a nested export `X/X/*.csv` given as `X` (user decision).
 
 ## Known pitfalls
