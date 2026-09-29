@@ -7,9 +7,10 @@ over the four measurements. Lab staff use the results to characterize thin films
 (wrong row read, dropped file, unit slip, wrong estimator) produces a number that looks plausible and
 can mislead material or process decisions. Prefer a loud failure to a quiet wrong answer.
 
-**Units:** sheet resistance Rs in Ω/sq; thickness t in the unit recorded in the data (confirm
-per [docs/domain/input-format.md](docs/domain/input-format.md)); resistivity ρ = Rs·t in Ω·cm; conductivity σ = 1/ρ in S/cm. Every
-quantity in code carries its unit in the name or docstring (`rs_ohm_sq`, `rho_ohm_cm`).
+**Units:** reported exactly as the instrument writes them: Rs in Ohm/square, ρ in **Ohm.m**, σ in
+**S/m** (SI, not per cm). ρ and σ are read from the files, never recomputed, and no thickness is
+needed ([ADR-0002](docs/adr/ADR-0002-statistical-definitions.md)). Every quantity in code carries
+its unit in its name (`rs_ohm_sq`, `rho_ohm_m`, `sigma_s_per_m`).
 
 ## Session protocol
 - **Start:** `/resume` (reads MEMORY.md, PROGRESS.md, latest `docs/sessions/` note, then states the plan).

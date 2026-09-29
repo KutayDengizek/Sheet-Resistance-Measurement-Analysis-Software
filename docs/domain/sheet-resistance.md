@@ -1,15 +1,15 @@
 # Sheet resistance, resistivity, conductivity
 
-| Quantity | Symbol | Unit (reported) | Relation |
+| Quantity | Symbol | Unit (as in the files, and as reported) | Relation (instrument side) |
 |---|---|---|---|
-| Sheet resistance | Rs | Ω/sq | measured (four-point probe; the instrument applies geometric correction) |
-| Film thickness | t | cm (confirm the source unit, e.g. nm → ×1e-7) | input, see [[input-format]] |
-| Resistivity | ρ | Ω·cm | ρ = Rs · t |
-| Conductivity | σ | S/cm | σ = 1/ρ |
+| Sheet resistance | Rs | Ohm/square (Ω/sq) | Rs = 4.50797 · V/I |
+| Resistivity | ρ | Ohm.m (Ω·m) | ρ = Rs · t, with t = 7 nm assumed by the instrument |
+| Conductivity | σ | S/m | σ = 1/ρ |
 
-- Conversion constants are named in code, e.g. `NM_PER_CM = 1e7`. Never inline them.
-- Averaging and inverting don't commute, so the order of operations matters. See the Q3 options
-  in [[../adr/ADR-0002-statistical-definitions]].
-- With n = 4 the SD estimator matters: ddof = 1 vs 0 changes the SD by a factor √(4/3) ≈ 1.155.
+- The tool does **not** recompute ρ or σ. It averages the values the instrument wrote
+  ([[../adr/ADR-0002-statistical-definitions]]).
+- Averaging and inverting don't commute: mean(σ_k) ≠ 1/mean(ρ_k). The tool reports mean(σ_k), which is intended.
+- The SD is the population SD (ddof = 0). With n = 4 it is √(3/4) ≈ 0.866 × the sample SD.
+- For reference: 1 Ω·m = 100 Ω·cm and 1 S/m = 0.01 S/cm. No conversion happens in the tool.
 
 Related: [[../components/stats]]

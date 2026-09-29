@@ -1,24 +1,36 @@
 # Input format: sample folders and instrument CSVs
 
-**Status: partially known.** Update this note once the example folder arrives (PROGRESS.md NEXT STEP).
+**Status: confirmed** against fixture `tests/fixtures/260902_U1/` (2026-09-29).
 
-## Known (from the user, 2026-09-29)
-- One sample = one folder named after the sample, e.g. `260918_E4` (looks like a `YYMMDD` date + sample id).
-- It contains 4 measurement CSVs: `260918_E4_1` … `260918_E4_4`. The suffix is the measurement number.
-- In each CSV, the **last two lines** hold the summary: the second-to-last line has the variable
-  names, the last line has their values. Example names: `Mean Sheet Resistance (Ohm/square)`,
-  `Standard Deviation`, and more.
+## Folder
+- One sample = one folder named after the sample, `YYMMDD_<id>` (e.g. `260902_U1`), holding exactly
+  4 files `<sample>_1.csv` … `<sample>_4.csv`. The suffix is the measurement number.
+- **Nested exports occur:** `data/260902_U1/260902_U1/*.csv`, where the outer folder also held a
+  `CLAUDE.md` describing the data. The CLI accepts the outer folder when it contains no CSVs and
+  has a subfolder with the same name (user decision, 2026-09-29).
+- Non-CSV files in the sample folder are ignored. Any extra `*.csv` is an error.
 
-## To confirm with the example (fill in)
-- [ ] File extension and exact file names; are there any other files in the folder?
-- [ ] Delimiter (`,` vs `;`), decimal separator, encoding/BOM, trailing blank lines
-- [ ] Full list of summary variable names, exactly as written, with their units
-- [ ] Does the CSV contain thickness, resistivity or conductivity already?
-- [ ] What precedes the summary lines (per-point raw data?), and could it help validate the summary?
+## File layout (all four files are identical in structure)
+1. Header: `Current (A),Voltage (V),Sheet Resistance (Ohm/square),Resistivity (Ohm.m),Conductivity (S/m)`
+2. 27 raw measurement rows, 5 columns
+3. One blank line
+4. Summary header, 6 columns: `Mean Sheet Resistance (Ohm/square),Standard Deviation,Mean Resistivity (Ohm.m),Standard Deviation,Mean Conductivity (S/m),Standard Deviation`
+5. Summary values, 6 columns
 
-## Contract the parser enforces (draft)
-Exactly 4 files with k = 1..4. The file prefix equals the folder name. The summary lines are the last
-two **non-empty** lines, with equal field counts. The required variables are present and numeric
-and greater than 0. Any violation raises an error that names the file.
+- Delimiter `,`, decimal point `.`, no BOM, CRLF line endings, a trailing CRLF after the last row.
+- Numbers carry full float precision and may use exponent notation (`3.06e-06`).
+- **The name `Standard Deviation` appears three times.** Columns must be addressed by position
+  (1, 3, 5), never by name through a dict.
+- Units are SI: resistivity is in **Ω·m** and conductivity in **S/m**, not Ω·cm or S/cm.
+
+## Instrument-side relationships (observed in the data; not used by the tool)
+- Rs = 4.50797 · V/I. The correction factor is ≈ 4.508, not π/ln2 ≈ 4.532.
+- ρ = Rs · 7e-9 m, so the instrument assumes a 7 nm film. σ = 1/ρ.
+
+## Contract the parser enforces
+Exactly 4 files with k = 1..4, and the file prefix equals the folder name. The last two non-empty
+lines are the summary. The header must match the 6 expected names exactly, in order. The values are
+6 finite numbers, and the three means are > 0. Any violation raises `InputFormatError` (or a
+subclass), with the file path and line number in the message.
 
 Related: [[../components/parser]], [[sheet-resistance]]

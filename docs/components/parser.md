@@ -1,27 +1,23 @@
 # Component: parser (`src/sheetres/parser.py`)
-Status: **not started** (Phase 1, needs the example data)
+Status: **implemented** 2026-09-29, tested against fixture `260902_U1`
 
-**Purpose.** Turn a sample folder into 4 validated `Measurement` records. It is the only
-component that touches the filesystem on the input side.
+**Purpose.** Turn a sample folder into 4 validated `Measurement` records. It is the only component
+that touches the filesystem on the input side.
 
-**Proposed interface.**
-```python
-@dataclass(frozen=True)
-class Measurement:
-    sample: str  # "260918_E4"
-    index: int  # 1..4
-    path: Path
-    rs_ohm_sq: float  # "Mean Sheet Resistance (Ohm/square)"
-    rs_sd_ohm_sq: float  # within-file "Standard Deviation"
-    extra: Mapping[str, float]  # every other summary variable, keyed by its exact name
+**Interface.**
+- `resolve_sample_folder(folder) -> Path`: returns `folder`, or `folder/folder.name` when `folder`
+  has no CSVs and contains a same-named subfolder (a nested export).
+- `load_sample(folder, expected_count=4) -> list[Measurement]`, sorted by index.
+- `Measurement`: `sample, index, path, rs_ohm_sq, rs_sd_ohm_sq, rho_ohm_m, rho_sd_ohm_m,
+  sigma_s_per_m, sigma_sd_s_per_m`. The `*_sd_*` fields are the within-file SDs; they are kept for
+  information but unused by stats.
 
+**Errors** (all subclass `InputFormatError(ValueError)`, messages give `path:line`):
+`WrongFileCount` (missing, extra or duplicate k), `NameMismatch` (a CSV not named `<sample>_<k>.csv`),
+`MissingSummary` (fewer than 2 non-empty lines, or ≠ 6 values), `UnexpectedHeader` (any change in
+the 6 summary names), `NonNumericValue` (unparsable, NaN/inf, or a mean ≤ 0).
 
-def load_sample(folder: Path, expected_count: int = 4) -> list[Measurement]: ...
-```
+**Invariants.** Never skip a file. Never coerce a value. Columns are addressed by position
+(`COL_*`) because `Standard Deviation` repeats. Non-CSV files in the folder are ignored.
 
-**Errors.** Use a dedicated hierarchy (`InputFormatError` → `WrongFileCount`, `NameMismatch`,
-`MissingVariable`, `NonNumericValue`). Messages include the file path and the line number.
-
-**Invariants.** Never skip a file. Never coerce a bad value. Sort results by `index`.
-
-**Quirks.** Fill in once the example data arrives. See [[../domain/input-format]] and MEMORY.md pitfalls.
+See [[../domain/input-format]].
