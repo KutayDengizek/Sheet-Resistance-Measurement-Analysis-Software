@@ -15,6 +15,13 @@ older entries into vault notes and leave a link. When two entries conflict, the 
   "align" the two.
 - 2026-09-29 — Desktop GUI = Tkinter (stdlib), launched by `Sheet Resistance App.bat` → [ADR-0004](docs/adr/ADR-0004-desktop-gui.md)
 - 2026-09-29 — The CLI accepts a nested export `X/X/*.csv` given as `X` (user decision).
+- 2026-09-29 — Work lives on `main`, and `origin` is github.com/KutayDengizek/Sheet-Resistance-Measurement-Analysis-Software
+  (published by the human via GitHub Desktop; `gh` is not installed). `git fetch`/`git push` from the agent shell hung
+  for more than 60 s, waiting for credentials. Use `GIT_TERMINAL_PROMPT=0` with a timeout, or ask the human to push in GitHub Desktop.
+- 2026-09-29 — The user is in a lab setting; colleagues are likely non-developers. Distribution today:
+  `uv` + `Sheet Resistance App.bat`. A PyInstaller `.exe` was offered; it is undecided and needs ADR-0005.
+- 2026-09-29 — The user prefers short free-text questions with a stated default over multiple-choice
+  prompts for routine next steps; two such prompts were rejected.
 
 ## Known pitfalls
 - 2026-09-29 — **Mean of conductivities ≠ 1/(mean resistivity).** Averaging and inverting don't

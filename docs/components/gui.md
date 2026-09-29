@@ -22,4 +22,7 @@ shows an error dialog.
 samples in folder…". The screenshot scripts used for visual checks live outside the repo; the
 window title is `Sheet Resistance Analysis`.
 
+**Distribution.** Colleagues need the folder and `uv` (the launcher runs `uv sync`; the first run is
+online). A standalone PyInstaller exe is proposed, not decided (PROGRESS 6b).
+
 Related: [[cli]], [[stats]], [[parser]]

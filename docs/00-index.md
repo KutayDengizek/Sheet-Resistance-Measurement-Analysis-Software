@@ -10,7 +10,7 @@ The hub note. Start here and follow only the links your task needs.
 - [[components/parser]]: sample folder → four validated per-measurement records. *(Phase 1)*
 - [[components/stats]]: pure aggregation to the six reported quantities. *(Phase 2)*
 - [[components/cli]]: `sheetres <folder>` presentation and exit codes. *(Phase 4)*
-- [[components/gui]]: Tkinter desktop app: pick folders, results table, copy to Excel. *(Phase 5)*
+- [[components/gui]]: Tkinter desktop app: pick folders, results table, copy to Excel. *(Phase 5a)*
 
 ## Decisions
 - [[adr/README]]: when an ADR is required, the template, and the golden-data approval procedure.
@@ -20,4 +20,4 @@ The hub note. Start here and follow only the links your task needs.
 - [[adr/ADR-0004-desktop-gui]]: **Accepted.** Tkinter GUI, no new dependency; clipboard export for Excel.
 
 ## Sessions
-- `sessions/`: append-only journal, one note per session (`YYYY-MM-DD-NN.md`). Latest: [[sessions/2026-09-29-02]].
+- `sessions/`: append-only journal, one note per session (`YYYY-MM-DD-NN.md`). Latest: [[sessions/2026-09-29-03]].
