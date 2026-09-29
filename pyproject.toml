@@ -9,6 +9,9 @@ dependencies = []
 [project.scripts]
 sheetres = "sheetres.cli:main"
 
+[project.gui-scripts]
+sheetres-gui = "sheetres.gui:main"
+
 [dependency-groups]
 dev = ["pytest>=8", "ruff>=0.6", "mypy>=1.11"]
 

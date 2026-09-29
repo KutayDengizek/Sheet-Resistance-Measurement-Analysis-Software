@@ -13,6 +13,7 @@ older entries into vault notes and leave a link. When two entries conflict, the 
   ADR-0002's population SD → [ADR-0003](docs/adr/ADR-0003-sample-standard-deviation.md). The
   instrument's within-file SDs divide by **n**, so the tool deliberately differs from them. Don't
   "align" the two.
+- 2026-09-29 — Desktop GUI = Tkinter (stdlib), launched by `Sheet Resistance App.bat` → [ADR-0004](docs/adr/ADR-0004-desktop-gui.md)
 - 2026-09-29 — The CLI accepts a nested export `X/X/*.csv` given as `X` (user decision).
 
 ## Known pitfalls
@@ -32,6 +33,12 @@ older entries into vault notes and leave a link. When two entries conflict, the 
   `tests/fixtures`, `tests/golden` or `.claude/approvals` next to `>`, `rm`, `sed -i`, etc. is blocked,
   even a heredoc that only writes docs. Use the Write/Edit tools for such files.
 - 2026-09-29 — ruff also formats the Python code blocks inside Markdown notes.
+- 2026-09-29 — **GUI visual check:** launch the app in the background, then take a PowerShell
+  `CopyFromScreen` of its window. Find the window through `Get-Process | ? MainWindowTitle -eq 'Sheet Resistance Analysis'`.
+  `FindWindow($null, …)` fails from PowerShell, because `$null` becomes "". The shell cannot run
+  `"Sheet Resistance App.bat"` through `cmd //c` (the spaces split the path); use `powershell -Command "& '.\Sheet Resistance App.bat'"`.
+- 2026-09-29 — Stderr is invisible when the GUI runs as `sheetres-gui.exe`/pythonw. Tk callback errors
+  go through `App._show_unexpected_error` (a dialog). Keep that hook.
 
 ## Domain invariants
 - One sample = one folder `YYMMDD_<id>` containing exactly 4 files `YYMMDD_<id>_<k>.csv`, k = 1..4.

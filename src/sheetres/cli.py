@@ -8,23 +8,16 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from sheetres.parser import InputFormatError, load_sample
+from sheetres.report import QUANTITIES, display, value
 from sheetres.stats import SampleSummary, summarize
 
 EXIT_INPUT_ERROR = 2
 
 
 def format_summary(s: SampleSummary) -> str:
-    rows = [
-        ("Mean sheet resistance", s.rs_mean_ohm_sq, "Ohm/square"),
-        ("Std. dev. of mean sheet resistance", s.rs_sd_ohm_sq, "Ohm/square"),
-        ("Mean resistivity", s.rho_mean_ohm_m, "Ohm.m"),
-        ("Std. dev. of mean resistivity", s.rho_sd_ohm_m, "Ohm.m"),
-        ("Mean conductivity", s.sigma_mean_s_per_m, "S/m"),
-        ("Std. dev. of mean conductivity", s.sigma_sd_s_per_m, "S/m"),
-    ]
-    width = max(len(label) for label, _, _ in rows)
+    width = max(len(q.label) for q in QUANTITIES)
     lines = [f"Sample {s.sample}  (n = {s.n} measurements, sample SD with n-1)"]
-    lines += [f"  {label:<{width}}  {value:.6g} {unit}" for label, value, unit in rows]
+    lines += [f"  {q.label:<{width}}  {display(value(s, q))} {q.unit}" for q in QUANTITIES]
     return "\n".join(lines)
 
 

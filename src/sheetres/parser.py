@@ -68,16 +68,20 @@ class Measurement:
 
 
 def _csv_entries(folder: Path) -> list[Path]:
-    return sorted(p for p in folder.iterdir() if p.suffix.lower() == ".csv")
+    try:
+        return sorted(p for p in folder.iterdir() if p.suffix.lower() == ".csv")
+    except OSError as exc:
+        raise InputFormatError(f"{folder}: folder cannot be read ({exc.strerror})") from exc
 
 
 def resolve_sample_folder(folder: Path) -> Path:
-    """Return the folder holding the CSVs. Accepts a nested export `X/X/*.csv` given as `X`."""
+    """Return the folder holding the CSVs. Accepts a nested export `X/X/*.csv` given as `X`
+    (only when `X` itself has no CSVs and `X/X` does)."""
     folder = folder.resolve()
     if not folder.is_dir():
         raise InputFormatError(f"{folder}: sample folder does not exist or is not a directory")
     nested = folder / folder.name
-    if not _csv_entries(folder) and nested.is_dir():
+    if not _csv_entries(folder) and nested.is_dir() and _csv_entries(nested):
         return nested
     return folder
 

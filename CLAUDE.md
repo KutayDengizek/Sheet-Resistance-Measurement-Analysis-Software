@@ -19,7 +19,8 @@ its unit in its name (`rs_ohm_sq`, `rho_ohm_m`, `sigma_s_per_m`).
 
 ## Repository map
 ```
-src/sheetres/        package: parser (CSV → records), stats (pure aggregation), cli/report
+src/sheetres/        parser (CSV → records), stats (pure aggregation), report (labels/units), cli, gui (Tkinter)
+Sheet Resistance App.bat   double-click launcher for the GUI (uv sync + sheetres-gui.exe)
 tests/               pytest; tests/fixtures/ = raw exports (append-only), tests/golden/ = expected outputs
 scripts/             regenerate_golden.py (the only sanctioned writer of tests/golden/)
 docs/                knowledge vault (Obsidian) → start at docs/00-index.md; ADRs in docs/adr/
@@ -31,6 +32,7 @@ docs/                knowledge vault (Obsidian) → start at docs/00-index.md; A
 uv sync                         # create/refresh .venv (Python ≥ 3.11)
 uv run pytest -m "not slow"     # fast tier (what the commit hook runs)
 uv run pytest                   # full suite
+uv run sheetres-gui [folder]    # desktop app (tests include a Tk smoke test)
 uv run ruff check . && uv run ruff format --check . && uv run mypy
 ```
 

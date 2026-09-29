@@ -1,8 +1,8 @@
 # PROGRESS
 
 ## CURRENT TASK
-Phases 1, 2 and 4 are done: `uv run sheetres <sample-folder>` prints the six quantities for a sample.
-Next is Phase 3 (golden baseline), which needs a one-time approval from the human.
+Phases 1, 2, 4 and the GUI (5a) are done. Use the CLI `sheetres <folder>`, or the desktop app
+`Sheet Resistance App.bat`. Next is Phase 3 (golden baseline), which needs a one-time approval from the human.
 
 ## NEXT STEP
 1. **Human:** create the file `.claude/approvals/golden.approved` containing the text `ADR-0003`.
@@ -18,8 +18,8 @@ Next is Phase 3 (golden baseline), which needs a one-time approval from the huma
 3. Reviewer NOTEs left open (see journal 2026-09-29-02): the raw-data block is not validated; the within-file
    SDs are not checked for ≥ 0; `NonNumericValue` is also used for ≤ 0 values. Pick these up only if the
    human wants stricter validation.
-4. Phase 5 options for the human to decide (each needs an ADR): a batch mode over `data/*`, CSV/JSON
-   export, a GUI.
+4. Further options for the human to decide (each needs an ADR): saving results to a file (.csv/.xlsx),
+   plots per sample. The GUI already covers batch analysis ("Add all samples in folder…").
 
 ## Phases
 | # | Phase | Status | Acceptance criteria |
@@ -29,7 +29,8 @@ Next is Phase 3 (golden baseline), which needs a one-time approval from the huma
 | 2 | Statistics core | ✅ done 2026-09-29 | ADR-0002 + ADR-0003 Accepted; pure `summarize`; sample SD (n − 1); hand-calculated tests |
 | 3 | Golden baseline | ⏳ waiting on approval marker | `tests/golden/<sample>.json` produced by the script; mutation planted and caught |
 | 4 | CLI / presentation | ✅ done 2026-09-29 | `sheetres <folder>` prints the 6 quantities with units; exit code 2 on bad input |
-| 5 | Optional: batch mode / export / GUI | ⬜ undecided | needs an ADR |
+| 5a | Desktop GUI | ✅ done 2026-09-29 | ADR-0004; pick folders; table + details; red error rows; copy for Excel; screenshot-verified |
+| 5b | Optional: file export / plots | ⬜ undecided | needs an ADR |
 
 ## Journal
 - 2026-09-29 — [sessions/2026-09-29-01](docs/sessions/2026-09-29-01.md): set up agent infrastructure; guardrails verified.

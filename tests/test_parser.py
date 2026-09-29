@@ -148,3 +148,9 @@ def test_uppercase_extension_counts_as_csv_for_nesting(tmp_path: Path) -> None:
     write_measurement(outer, "260101_T1_1.CSV")
     with pytest.raises(WrongFileCount):  # outer has a CSV, so it is NOT treated as nested
         load_sample(outer)
+
+
+def test_same_named_subfolder_without_csvs_is_not_treated_as_nested(tmp_path: Path) -> None:
+    outer = tmp_path / "260101_T1"
+    (outer / "260101_T1").mkdir(parents=True)
+    assert resolve_sample_folder(outer) == outer.resolve()
