@@ -1,0 +1,41 @@
+[project]
+name = "sheet-resistance-analysis"
+version = "0.1.0"
+description = "Aggregate four-point sheet resistance measurements per sample into sheet resistance, resistivity and conductivity statistics."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+sheetres = "sheetres.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6", "mypy>=1.11"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sheetres"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = ["slow: end-to-end cases excluded from the pre-commit tier"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# BLE001 / S110 / S112 mechanically enforce invariant 3 (no silently swallowed errors).
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "BLE", "S110", "S112", "PLR2004", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["PLR2004"]
+
+[tool.mypy]
+strict = true
+files = ["src", "tests"]

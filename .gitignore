@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+# Local working data (real lab exports) - never committed; test fixtures live in tests/fixtures/
+data/
+# Claude Code per-machine state
+.claude/state/
+.claude/settings.local.json
+# Obsidian per-user UI state
+docs/.obsidian/workspace*.json
+docs/.obsidian/cache
